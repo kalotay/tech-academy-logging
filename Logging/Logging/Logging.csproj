@@ -50,6 +50,8 @@
     <Compile Include="LoggingInterfaceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlConfigured\Configurator.cs" />
+    <Compile Include="XmlConfigured\LoggingTests.cs" />
+    <Compile Include="XmlConfigured\MessageObjects.cs" />
     <Compile Include="XmlConfigured\XmlConfigurationTests.cs" />
   </ItemGroup>
   <ItemGroup>
