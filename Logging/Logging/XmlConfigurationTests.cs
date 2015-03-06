@@ -41,5 +41,45 @@ namespace Logging
 			Assert.That(fatalEvents.Select(e => e.MessageObject), Has.Some.EqualTo("Fatal"));
 		}
 
+		[Test]
+		public void LogsError()
+		{
+			Assert.That(Log.IsErrorEnabled, "Error level disabled");
+			Log.Error("Error");
+			var events = _memoryAppender.GetEvents();
+			var errorEvents = events.Where(e => e.Level == Level.Error);
+			Assert.That(errorEvents.Select(e => e.MessageObject), Has.Some.EqualTo("Error"));
+		}
+
+		[Test]
+		public void LogsWarn()
+		{
+			Assert.That(Log.IsWarnEnabled, "Warn level disabled");
+			Log.Warn("Warn");
+			var events = _memoryAppender.GetEvents();
+			var warnEvents = events.Where(e => e.Level == Level.Warn);
+			Assert.That(warnEvents.Select(e => e.MessageObject), Has.Some.EqualTo("Warn"));
+		}
+
+		[Test]
+		public void LogsInfo()
+		{
+			Assert.That(Log.IsInfoEnabled, "Info level disabled");
+			Log.Info("Info");
+			var events = _memoryAppender.GetEvents();
+			var infoEvents = events.Where(e => e.Level == Level.Info);
+			Assert.That(infoEvents.Select(e => e.MessageObject), Has.Some.EqualTo("Info"));
+		}
+
+		[Test]
+		public void LogsDebug()
+		{
+			Assert.That(Log.IsDebugEnabled, "Debug level disabled");
+			Log.Debug("Debug");
+			var events = _memoryAppender.GetEvents();
+			var debugEvents = events.Where(e => e.Level == Level.Debug);
+			Assert.That(debugEvents.Select(e => e.MessageObject), Has.Some.EqualTo("Debug"));
+		}
+
 	}
 }
