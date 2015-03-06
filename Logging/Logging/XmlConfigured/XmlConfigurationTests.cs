@@ -1,11 +1,11 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using log4net;
 using log4net.Appender;
 using log4net.Config;
 using log4net.Core;
 
-namespace Logging
+namespace Logging.XmlConfigured
 {
 	[TestFixture]
 	public class XmlConfigurationTests
@@ -19,7 +19,6 @@ namespace Logging
 		[TestFixtureSetUp]
 		public void BootstrapLogging()
 		{
-			XmlConfigurator.Configure();
 			var repository = LogManager.GetRepository();
 			var appenders = repository.GetAppenders();
 			foreach (var appender in appenders.Where(appender => appender.Name == MemoryAppenderName))

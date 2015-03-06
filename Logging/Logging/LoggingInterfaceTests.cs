@@ -10,7 +10,7 @@ namespace Logging
 		private static readonly ILog Log = LogManager.GetLogger(typeof (LoggingInterfaceTests));
 
 		[TestFixtureSetUp]
-		public void BootstrapLogging()
+		public void ConfigureLogging()
 		{
 			BasicConfigurator.Configure();
 		}
