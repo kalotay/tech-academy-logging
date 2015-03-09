@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using log4net;
+using log4net.Appender;
 
 namespace Logging.XmlConfigured
 {
@@ -59,6 +61,54 @@ namespace Logging.XmlConfigured
 			Assert.That(wLogger.IsWarnEnabled);
 			Assert.That(wLogger.IsInfoEnabled);
 			Assert.That(wLogger.IsDebugEnabled, Is.False);
+		}
+
+		[Test]
+		public void AppenderInheritance()
+		{
+			var repository = LogManager.GetRepository();
+			var appenders = repository.GetAppenders();
+			var memoryAppenders = appenders.OfType<MemoryAppender>().ToArray();
+			var rootAppender = memoryAppenders.Single(appender => appender.Name == "MemoryAppender");
+			var xAppender = memoryAppenders.Single(appender => appender.Name == "XAppender");
+			var zAppender = memoryAppenders.Single(appender => appender.Name == "ZAppender");
+			var securityAppender = memoryAppenders.Single(appender => appender.Name == "SecurityAppender");
+
+			LogManager.GetLogger("").Error("rootMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("rootMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("rootMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("rootMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("rootMessage"));
+
+			LogManager.GetLogger("X").Error("xMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("xMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("xMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("xMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("xMessage"));
+
+			LogManager.GetLogger("X.Y").Error("yMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("yMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("yMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("yMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("yMessage"));
+
+			LogManager.GetLogger("X.Y.Z").Error("zMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("zMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("zMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("zMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("zMessage"));
+
+			LogManager.GetLogger("security").Error("securityMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("securityMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("securityMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("securityMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("securityMessage"));
+
+			LogManager.GetLogger("security.other").Error("otherMessage");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("otherMessage"));
+			Assert.That(xAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("otherMessage"));
+			Assert.That(zAppender.GetEvents().Select(@event => @event.MessageObject), Has.None.EqualTo("otherMessage"));
+			Assert.That(securityAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("otherMessage"));
 		}
 	}
 }
