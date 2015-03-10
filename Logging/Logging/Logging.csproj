@@ -51,7 +51,10 @@
     <Compile Include="NoopAppender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlConfigured\Configurator.cs" />
+    <Compile Include="XmlConfigured\ContextPropertiesTest.cs" />
+    <Compile Include="XmlConfigured\ContextStackTest.cs" />
     <Compile Include="XmlConfigured\CustomAppenderTests.cs" />
+    <Compile Include="XmlConfigured\FixedMemoryAppender.cs" />
     <Compile Include="XmlConfigured\LoggerHierarchyTests.cs" />
     <Compile Include="XmlConfigured\LoggerLevelThresholds.cs" />
     <Compile Include="XmlConfigured\LoggingTests.cs" />

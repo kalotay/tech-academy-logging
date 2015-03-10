@@ -7,7 +7,7 @@ using log4net.Core;
 
 namespace Logging.XmlConfigured
 {
-	[TestFixture]
+	[TestFixture, Ignore]
 	public class MisconfigurationTests
 	{
 		[Test]
