@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using log4net;
 using log4net.Appender;
+using log4net.Core;
 
 namespace Logging.XmlConfigured
 {
@@ -39,6 +41,25 @@ namespace Logging.XmlConfigured
 			var special = memoryAppenders.First(appender => appender.Name == "ExtraAppender");
 			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("sensitive stuff"));
 			Assert.That(special.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("sensitive stuff"));
+		}
+
+		[Test]
+		public void BrokenAppender()
+		{
+			LogManager.GetLogger("broken").Error("broken stuff");
+			var memoryAppenders = LogManager.GetRepository().GetAppenders().OfType<MemoryAppender>().ToArray();
+			var rootAppender = memoryAppenders.First(appender => appender.Name == "MemoryAppender");
+			var special = memoryAppenders.First(appender => appender.Name == "BrokenAppender");
+			Assert.That(rootAppender.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("broken stuff"));
+			Assert.That(special.GetEvents().Select(@event => @event.MessageObject), Has.Some.EqualTo("broken stuff"));
+		}
+	}
+
+	public class BrokenAppender: MemoryAppender
+	{
+		protected override void Append(LoggingEvent loggingEvent)
+		{
+			throw new Exception();
 		}
 	}
 }
